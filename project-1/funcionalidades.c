@@ -119,6 +119,8 @@ static int adicionar_par_unico(ParEstacao **pares, int *quantidade, int *capacid
         // Se a quantidade de pares é igual à capacidade do vetor de pares, aumenta a capacidade do vetor de pares
         if (*capacidade == 0) {
             *capacidade = 16;
+        } else {
+            *capacidade = *capacidade * 2;
         }
         // Alocação do novo vetor de pares
         novoVetor = (ParEstacao *)realloc(*pares, (*capacidade) * sizeof(ParEstacao));

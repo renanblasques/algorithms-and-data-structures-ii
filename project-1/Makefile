@@ -3,7 +3,3 @@ all:
 
 run:
 	./programaTrab
-
-.PHONY: all run clean
-clean:
-	rm -f programaTrab

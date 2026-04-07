@@ -1,6 +1,6 @@
 /*
  * Nome: Renan Silva Blasques                | NUSP: 9784057
- * Nome: Rodrigo de Jesus Ferreira Gonçalves | NUSP:
+ * Nome: Rodrigo de Jesus Ferreira Gonçalves | NUSP: 16899823
  */
 
 #include <stdio.h>
