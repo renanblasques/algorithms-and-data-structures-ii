@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "arquivo.h"
+
+#define TAM_PARTE_FIXA_REGISTRO 37
+
 /*
     Função para definir uma string
     Entrada: ponteiro para a string destino, ponteiro para o tamanho da string, string original
@@ -178,12 +182,32 @@ int ler_linha_csv(FILE *csv, Dado *dado) {
 
     // Definição da string nomeEstacao e conversão dos campos para inteiro
     definir_string(&dado->nomeEstacao, &dado->tamNomeEstacao, campos[1]);
-    dado->codLinha = campo_vazio(campos[2]) ? -1 : atoi(campos[2]);
+    if (campo_vazio(campos[2])) {
+        dado->codLinha = -1;
+    } else {
+        dado->codLinha = atoi(campos[2]);
+    }
     definir_string(&dado->nomeLinha, &dado->tamNomeLinha, campos[3]);
-    dado->codProxEstacao = campo_vazio(campos[4]) ? -1 : atoi(campos[4]);
-    dado->distProxEstacao = campo_vazio(campos[5]) ? -1 : atoi(campos[5]);
-    dado->codLinhaIntegra = campo_vazio(campos[6]) ? -1 : atoi(campos[6]);
-    dado->codEstIntegra = campo_vazio(campos[7]) ? -1 : atoi(campos[7]);
+    if (campo_vazio(campos[4])) {
+        dado->codProxEstacao = -1;
+    } else {
+        dado->codProxEstacao = atoi(campos[4]);
+    }
+    if (campo_vazio(campos[5])) {
+        dado->distProxEstacao = -1;
+    } else {
+        dado->distProxEstacao = atoi(campos[5]);
+    }
+    if (campo_vazio(campos[6])) {
+        dado->codLinhaIntegra = -1;
+    } else {
+        dado->codLinhaIntegra = atoi(campos[6]);
+    }
+    if (campo_vazio(campos[7])) {
+        dado->codEstIntegra = -1;
+    } else {
+        dado->codEstIntegra = atoi(campos[7]);
+    }
 
     // Verifica se a string nomeEstacao ou nomeLinha é nula
     if (dado->nomeEstacao == NULL || dado->nomeLinha == NULL) {
@@ -228,7 +252,7 @@ void escrever_registro(FILE *arquivo, Dado *dado) {
     }
 
     // Cálculo da quantidade de lixo para preencher o registro
-    quantidadeLixo = 80 - (37 + dado->tamNomeEstacao + dado->tamNomeLinha); // 80 é o tamanho do registro e 37 é o tamanho dos campos fixos
+    quantidadeLixo = TAM_REGISTRO - (TAM_PARTE_FIXA_REGISTRO + dado->tamNomeEstacao + dado->tamNomeLinha);
 
     // Preencimento do registro com cifrão (lixo)
     preencher_com_cifrao(arquivo, quantidadeLixo);
@@ -241,13 +265,13 @@ void escrever_registro(FILE *arquivo, Dado *dado) {
 */
 int ler_registro(FILE *arquivo, Dado *dado) {
     // Declaração de variável para armazenamento do buffer
-    char buffer[80];
+    char buffer[TAM_REGISTRO];
 
     // Declaração de variável para armazenamento do deslocamento
     int deslocamento;
 
     // Leitura do registro e verifica se a leitura foi feita corretamente
-    if (fread(buffer, sizeof(char), 80, arquivo) != 80) {
+    if (fread(buffer, sizeof(char), TAM_REGISTRO, arquivo) != TAM_REGISTRO) {
         return 0;
     }
 

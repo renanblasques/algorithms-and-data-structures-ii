@@ -65,7 +65,7 @@ void escrever_cabecalho(FILE *arquivo, Cabecalho *cabecalho) {
 */
 int calcular_offset_registro(int rrn) {
     // Cálculo do offset do registro no arquivo binário
-    return 17 + (rrn * 80); // 17 é o tamanho do registro de cabeçalho e 80 é o tamanho do registro de dados
+    return TAM_CABECALHO + (rrn * TAM_REGISTRO);
 }
 
 /*

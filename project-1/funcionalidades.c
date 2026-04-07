@@ -32,8 +32,10 @@ static void imprimir_falha_processamento() {
     Entrada: string a ser duplicada
     Saída: ponteiro para a string duplicada
 */
-static char *duplicar_string_simples(const char *origem) {
+static char *duplicar_string_simples(char *origem) {
+    // Alocação da string duplicada com o tamanho da string original + 1 para o caractere nulo
     char *copia = (char *)malloc(strlen(origem) + 1);
+    // Verifica se a alocação foi feita corretamente
 
     if (copia == NULL) {
         return NULL;
@@ -50,7 +52,7 @@ static char *duplicar_string_simples(const char *origem) {
     Entrada: vetor de nomes, quantidade de nomes, capacidade do vetor de nomes, nome da estação
     Saída: 1 se o nome foi adicionado com sucesso, 0 caso contrário
 */
-static int adicionar_nome_unico(char ***nomes, int *quantidade, int *capacidade, const char *nome) {
+static int adicionar_nome_unico(char ***nomes, int *quantidade, int *capacidade, char *nome) {
     int i;
     char **novoVetor;
 
@@ -62,7 +64,11 @@ static int adicionar_nome_unico(char ***nomes, int *quantidade, int *capacidade,
 
     if (*quantidade == *capacidade) {
         // Se a quantidade de nomes é igual à capacidade do vetor de nomes, aumenta a capacidade do vetor de nomes
-        *capacidade = (*capacidade == 0) ? 16 : (*capacidade * 2);
+        if (*capacidade == 0) {
+            *capacidade = 16;
+        } else {
+            *capacidade = *capacidade * 2;
+        }
         // Alocação do novo vetor de nomes
         novoVetor = (char **)realloc(*nomes, (*capacidade) * sizeof(char *));
         // Verifica se a alocação foi feita corretamente
@@ -72,12 +78,16 @@ static int adicionar_nome_unico(char ***nomes, int *quantidade, int *capacidade,
         *nomes = novoVetor;
     }
 
+    // Duplicação da string nome
     (*nomes)[*quantidade] = duplicar_string_simples(nome);
+    // Verifica se a duplicação foi feita corretamente
     if ((*nomes)[*quantidade] == NULL) {
         return 0;
     }
 
+    // Incrementação da quantidade de nomes
     (*quantidade)++;
+
     return 1;
 }
 
@@ -87,30 +97,45 @@ static int adicionar_nome_unico(char ***nomes, int *quantidade, int *capacidade,
     Saída: 1 se o par foi adicionado com sucesso, 0 caso contrário
 */
 static int adicionar_par_unico(ParEstacao **pares, int *quantidade, int *capacidade, int codEstacao, int codProxEstacao) {
+    // Declaração de variáveis para armazenamento do índice e do novo vetor de pares
     int i;
     ParEstacao *novoVetor;
 
+    // Verifica se o código da próxima estação é -1 (NULO), se não, retorna 1
     if (codProxEstacao == -1) {
         return 1;
     }
 
+    // Loop para verificar se o par de códigos de estação já existe
     for (i = 0; i < *quantidade; i++) {
+        // Verifica se o código da estação e o código da próxima estação são iguais ao par de códigos de estação
         if ((*pares)[i].codEstacao == codEstacao && (*pares)[i].codProxEstacao == codProxEstacao) {
             return 1;
         }
     }
 
+    // Verifica se a quantidade de pares é igual à capacidade do vetor de pares, se não, aumenta a capacidade do vetor de pares 
     if (*quantidade == *capacidade) {
-        *capacidade = (*capacidade == 0) ? 16 : (*capacidade * 2);
+        // Se a quantidade de pares é igual à capacidade do vetor de pares, aumenta a capacidade do vetor de pares
+        if (*capacidade == 0) {
+            *capacidade = 16;
+        }
+        // Alocação do novo vetor de pares
         novoVetor = (ParEstacao *)realloc(*pares, (*capacidade) * sizeof(ParEstacao));
+        // Verifica se a alocação foi feita corretamente
         if (novoVetor == NULL) {
+            // Se a alocação falhou, retorna 0
             return 0;
         }
         *pares = novoVetor;
     }
 
+    // Atribuição do código da estação e do código da próxima estação ao par de códigos de estação
     (*pares)[*quantidade].codEstacao = codEstacao;
+    // Atribuição do código da próxima estação ao par de códigos de estação
     (*pares)[*quantidade].codProxEstacao = codProxEstacao;
+
+    // Incrementação da quantidade de pares
     (*quantidade)++;
     return 1;
 }
@@ -123,10 +148,12 @@ static int adicionar_par_unico(ParEstacao **pares, int *quantidade, int *capacid
 static void liberar_nomes(char **nomes, int quantidade) {
     int i;
 
+    // Loop para liberar cada nome do vetor de nomes
     for (i = 0; i < quantidade; i++) {
         free(nomes[i]);
     }
 
+    // Liberação do vetor de nomes
     free(nomes);
 }
 
@@ -450,8 +477,13 @@ void executar_funcionalidade_3() {
             }
         }
 
-        // Posicionamento no início do arquivo binário
-        fseek(binario, 17, SEEK_SET); // 17 é o tamanho do cabeçalho do arquivo binário
+        // Posicionamento no primeiro registro de dados
+        if (!posicionar_no_registro(binario, 0)) {
+            free(filtros);
+            fclose(binario);
+            imprimir_falha_processamento();
+            return;
+        }
 
         // Percorre todos os registros do arquivo binário e verifica se a leitura foi feita corretamente
         for (rrn = 0; rrn < cabecalho.proxRRN; rrn++) {

@@ -1,10 +1,9 @@
 all:
-	gcc -Wall -Wextra -o programaTrab *.c -lcrypto
-	./programaTrab
+	gcc -o programaTrab *.c
 
 run:
 	./programaTrab
 
-.PHONY: clean
+.PHONY: all run clean
 clean:
 	rm -f programaTrab
