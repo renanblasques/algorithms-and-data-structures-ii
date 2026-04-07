@@ -44,9 +44,11 @@ static int campo_vazio(char *campo) {
     Saída: não há
 */
 static void preencher_com_cifrao(FILE *arquivo, int quantidade) {
+    // Define o lixo como o caractere $
     char lixo = '$';
     int i;
 
+    // Preenche o arquivo com o caractere $
     for (i = 0; i < quantidade; i++) {
         fwrite(&lixo, sizeof(char), 1, arquivo);
     }
@@ -58,6 +60,7 @@ static void preencher_com_cifrao(FILE *arquivo, int quantidade) {
     Saída: não há
 */
 static void imprimir_inteiro(int valor) {
+    // Verifica se o valor é -1 (NULO), se não, imprime o valor
     if (valor == -1) {
         printf("NULO");
     } else {
@@ -71,6 +74,7 @@ static void imprimir_inteiro(int valor) {
     Saída: não há
 */
 static void imprimir_string(const char *string, int tamanho) {
+    // Verifica se o tamanho da string é 0 (NULO), se não, imprime a string
     if (tamanho == 0) {
         printf("NULO");
     } else {
@@ -84,6 +88,7 @@ static void imprimir_string(const char *string, int tamanho) {
     Saída: não há
 */
 void inicializar_dado(Dado *dado) {
+    // Inicialização de cada campo do dado
     dado->removido = '0';
     dado->proximo = -1;
     dado->codEstacao = -1;
@@ -104,14 +109,17 @@ void inicializar_dado(Dado *dado) {
     Saída: não há
 */
 void liberar_dado(Dado *dado) {
+    // Liberação da string nomeEstacao
     if (dado->nomeEstacao != NULL) {
         free(dado->nomeEstacao);
     }
 
+    // Liberação da string nomeLinha
     if (dado->nomeLinha != NULL) {
         free(dado->nomeLinha);
     }
 
+    // Atribuição de NULL aos ponteiros e seta o tamanho das strings para 0
     dado->nomeEstacao = NULL;
     dado->nomeLinha = NULL;
     dado->tamNomeEstacao = 0;
@@ -124,37 +132,51 @@ void liberar_dado(Dado *dado) {
     Saída: 1 se a linha foi lida com sucesso, 0 caso contrário
 */
 int ler_linha_csv(FILE *csv, Dado *dado) {
+    // Declaração de variáveis para armazenamento da linha e dos campos
     char linha[512];
     char *campos[8];
     char *inicio;
     char *ponteiroLinha;
     int indice;
 
+    // Leitura da linha e verifica se a leitura foi feita corretamente
     if (fgets(linha, sizeof(linha), csv) == NULL) {
         return 0;
     }
 
+    // Inicialização do inicio da linha e dos campos
     inicio = linha;
     campos[0] = inicio;
     indice = 1;
 
+    // Loop para leitura dos campos da linha
     for (ponteiroLinha = linha; *ponteiroLinha != '\0'; ponteiroLinha++) {
+        // Verifica se o caractere é uma vírgula e se o índice é menor que 8 (8 é o número de campos da linha)
         if (*ponteiroLinha == ',' && indice < 8) {
+            // Define o caractere como nulo e incrementa o índice
             *ponteiroLinha = '\0';
+            // Define o campo como o ponteiro da linha incrementado em 1
             campos[indice] = ponteiroLinha + 1;
+            // Incrementa o índice
             indice++;
         } else if (*ponteiroLinha == '\n' || *ponteiroLinha == '\r') {
             *ponteiroLinha = '\0';
         }
     }
 
+    // Verifica se o número de campos é diferente de 8 (8 é o número de campos da linha)
     if (indice != 8) {
+        // Se o número de campos é diferente de 8, retorna 0
         return 0;
     }
 
+    // Inicialização do dado
     inicializar_dado(dado);
 
+    // Conversão do campo codEstacao para inteiro
     dado->codEstacao = atoi(campos[0]);
+
+    // Definição da string nomeEstacao e conversão dos campos para inteiro
     definir_string(&dado->nomeEstacao, &dado->tamNomeEstacao, campos[1]);
     dado->codLinha = campo_vazio(campos[2]) ? -1 : atoi(campos[2]);
     definir_string(&dado->nomeLinha, &dado->tamNomeLinha, campos[3]);
@@ -163,6 +185,7 @@ int ler_linha_csv(FILE *csv, Dado *dado) {
     dado->codLinhaIntegra = campo_vazio(campos[6]) ? -1 : atoi(campos[6]);
     dado->codEstIntegra = campo_vazio(campos[7]) ? -1 : atoi(campos[7]);
 
+    // Verifica se a string nomeEstacao ou nomeLinha é nula
     if (dado->nomeEstacao == NULL || dado->nomeLinha == NULL) {
         liberar_dado(dado);
         return 0;

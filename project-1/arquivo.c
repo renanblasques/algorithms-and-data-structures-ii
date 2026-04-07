@@ -74,5 +74,10 @@ int calcular_offset_registro(int rrn) {
     Saída: 1 se o registro foi posicionado com sucesso, 0 caso contrário
 */
 int posicionar_no_registro(FILE *arquivo, int rrn) {
-    return fseek(arquivo, calcular_offset_registro(rrn), SEEK_SET) == 0;
+    // Posiciona no registro no arquivo binário e verifica se a posição foi feita corretamente
+    if (fseek(arquivo, calcular_offset_registro(rrn), SEEK_SET) != 0) {
+        return 0;
+    }
+
+    return 1;
 }
