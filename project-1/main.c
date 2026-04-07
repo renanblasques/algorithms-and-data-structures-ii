@@ -1,31 +1,46 @@
-typedef struct cabecalho {
-  int status;   // indica consistência - atualiza para 0 ao abrir e 1 ao fechar
-  int topo;     // registra o byte offset
-  int proxRRN;  // armazena o valor do próximo RRN disponível
-  int nroEstacoes;      // mesmo nome - mesma estação
-  int nroParesEstacao;  // quantidade de pares (codEstacao e codProxEstacao)
-} cabecalho;
+/*
+ * Nome: Renan Silva Blasques                | NUSP: 9784057
+ * Nome: Rodrigo de Jesus Ferreira Gonçalves | NUSP:
+ */
 
-typedef struct dado {  // max 80 bytes (37 bytes fixos e 43 bytes sobrando para
-                       // variáveis)
-  char removido;       // indica se registro foi removido - 1 byte
-  int proximo;         // indica próximo registro - 4 bytes
-
-  int codEstacao;       // campo de tamanho fixo - 4 bytes (not null)
-  int codLinha;         // campo de tamanho fixo - 4 bytes (null = -1)
-  int codProxEstacao;   // campo de tamanho fixo - 4 bytes (null = -1)
-  int distProxEstacao;  // campo de tamanho fixo - 4 bytes (null = -1)
-  int codLinhaIntegra;  // campo de tamanho fixo - 4 bytes (null = -1)
-  int codEstIntegra;    // campo de tamanho fixo - 4 bytes (null = -1)
-
-  int tamNomeEstacao;  // delimitador de tamanho - 4 bytes
-  char* nomeEstacao;   // campo de tamanho variável (not null)
-  int tamNomeLinha;    // delimitador de tamanho - 4 bytes (nomeLinha null = 0)
-  char* nomeLinha;     // campo de tamanho variável
-} dado;
+#include <stdio.h>
+#include "funcionalidades.h"
 
 int main() {
-  // programa principal aqui
+    int funcionalidade;
 
-  return 0;
+    // Leitura da funcionalidade escolhida pelo usuário (1, 2, 3 ou 4)
+    // Se a leitura falhar, o programa termina
+    if (scanf("%d", &funcionalidade) != 1) {
+        return 0;
+    }
+
+    // Execução da funcionalidade escolhida pelo usuário
+    switch (funcionalidade) {
+        case 1:
+            // Funcionalidade 1: Criar arquivo binário a partir de um arquivo CSV
+            // Entrada na tela: nomeCsv.csv nomeBinario.bin (exemplo: "estacoes.csv estacoes.bin")
+            executar_funcionalidade_1();
+            break;
+        case 2:
+            // Funcionalidade 2: Imprimir registros existentes em um arquivo binário
+            // Entrada na tela: nomeBinario.bin (exemplo: "estacoes.bin")
+            executar_funcionalidade_2();
+            break;
+        case 3:
+            // Funcionalidade 3: Buscar registros que satisfazem os filtros em um arquivo binário
+            // Entrada na tela: nomeBinario.bin quantidadeBuscas (exemplo: "estacoes.bin 2")
+            executar_funcionalidade_3();
+            break;
+        case 4:
+            // Funcionalidade 4: Imprimir um registro específico em um arquivo binário
+            // Entrada na tela: nomeBinario.bin RRN (exemplo: "estacoes.bin 0")
+            executar_funcionalidade_4();
+            break;
+        default:
+            // Se a funcionalidade escolhida não for válida, o programa termina
+            break;
+    }
+
+    return 0;
 }
